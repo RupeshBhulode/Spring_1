@@ -26,14 +26,12 @@ public class CashfreeService {
     @Value("${cashfree.api-version}")
     private String apiVersion;
 
-    @Value("${app.url}")
-    private String appUrl;
-
     public Map<String, Object> createPaymentSession(String orderId, 
                                                      Double amount, 
                                                      String customerName, 
                                                      String customerEmail, 
-                                                     String customerPhone) {
+                                                     String customerPhone,
+                                                     String baseUrl) {
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -58,10 +56,10 @@ public class CashfreeService {
         customerDetails.put("customer_phone", customerPhone);
         requestBody.put("customer_details", customerDetails);
 
-        // Order Meta - webhook and return URL
+        // Order Meta - dynamic webhook and return URL
         Map<String, String> orderMeta = new HashMap<>();
-        orderMeta.put("notify_url", appUrl + "/api/webhook/cashfree");
-        orderMeta.put("return_url", appUrl + "/api/orders/{order_id}");
+        orderMeta.put("notify_url", baseUrl + "/api/webhook/cashfree");
+        orderMeta.put("return_url", baseUrl + "/api/orders/{order_id}");
         requestBody.put("order_meta", orderMeta);
 
         // HttpEntity - combines headers + body together
