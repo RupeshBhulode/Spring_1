@@ -26,6 +26,9 @@ public class CashfreeService {
     @Value("${cashfree.api-version}")
     private String apiVersion;
 
+    @Value("${app.url}")
+    private String appUrl;
+
     public Map<String, Object> createPaymentSession(String orderId, 
                                                      Double amount, 
                                                      String customerName, 
@@ -54,6 +57,12 @@ public class CashfreeService {
         customerDetails.put("customer_email", customerEmail);
         customerDetails.put("customer_phone", customerPhone);
         requestBody.put("customer_details", customerDetails);
+
+        // Order Meta - webhook and return URL
+        Map<String, String> orderMeta = new HashMap<>();
+        orderMeta.put("notify_url", appUrl + "/api/webhook/cashfree");
+        orderMeta.put("return_url", appUrl + "/api/orders/{order_id}");
+        requestBody.put("order_meta", orderMeta);
 
         // HttpEntity - combines headers + body together
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
